@@ -1,0 +1,19 @@
+{
+  "name": "generator-mpern-app",
+  "version": "0.1.0",
+  "description": "A generator for a mern or pern app built with yeoman.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "yeoman-generator",
+    "mern",
+    "pern"
+  ],
+  "author": "Alex Wiegand",
+  "license": "MIT",
+  "dependencies": {
+    "yeoman-generator": "^5.4.2"
+  }
+}

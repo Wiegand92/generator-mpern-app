@@ -1,0 +1,17 @@
+{
+  "name": "mern-react-app",
+  "version": "1.0.0",
+  "description": "a boilerplate for my mern stack",
+  "scripts": {
+    "client": "npm start --workspace front-end",
+    "server": "npm run dev --workspace back-end",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently -r \"npm:server\" \"npm:client\""
+  },
+  "workspaces": ["front-end", "back-end"],
+  "author": "Alex Wiegand",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^6.4.0"
+  }
+}
