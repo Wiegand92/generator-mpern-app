@@ -1,12 +1,21 @@
-const Generator = require('yeoman-generator')
-module.exports = class extends Generator{
+const Generator = require('yeoman-generator');
+const {editorConfigs} = require('../fixtures/file-locations');
 
-  initializing(){
-    this.composeWith(require.resolve('../front-end'))
+module.exports = class extends Generator {
+  initializing() {
+    this.composeWith(require.resolve('../front-end'));
   }
 
-  prompting(){
-    this.log('helloo!')
+  prompting() {
+    this.log('helloo!');
   }
 
-}
+  writing() {
+    editorConfigs.forEach(file =>
+      this.fs.copyTpl(
+        this.templatePath(file.templatePath),
+        this.destinationPath(file.destinationPath),
+      ),
+    );
+  }
+};
