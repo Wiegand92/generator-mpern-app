@@ -1,17 +1,25 @@
 {
-  "name": "mern-react-app",
+  "name": "mern-back-end",
   "version": "1.0.0",
-  "description": "a boilerplate for my mern stack",
+  "description": "the server for my apps",
+  "main": "server.js",
   "scripts": {
-    "client": "npm start --workspace front-end",
-    "server": "npm run dev --workspace back-end",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently -r \"npm:server\" \"npm:client\""
+    "test": "jest --watch --coverage --verbose",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "build": "tsc"
   },
-  "workspaces": ["front-end", "back-end"],
+  "keywords": ["express-app"],
   "author": "Alex Wiegand",
   "license": "MIT",
   "dependencies": {
-    "concurrently": "^6.4.0"
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dayjs": "^1.10.7",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.10",
+    "nodemon": "^2.0.7"
   }
 }

@@ -23,6 +23,7 @@ module.exports = {
       webpack: '^5.65.0',
       'webpack-cli': '^4.9.1',
       'webpack-dev-server': '^4.7.2',
+      'html-webpack-plugin': '^5.5.0',
     },
     dependencies: {
       react: '^17.0.2',

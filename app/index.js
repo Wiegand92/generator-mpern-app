@@ -9,7 +9,6 @@ module.exports = class extends Generator {
   }
 
   async prompting() {
-    this.log('helloo!');
     this.answers = await this.prompt([
       {
         type: 'confirm',
@@ -23,6 +22,7 @@ module.exports = class extends Generator {
 
   writing() {
     if (this.answers.backend) {
+      this.composeWith(require.resolve('../back-end'));
       editorConfigs.forEach(file =>
         this.fs.copyTpl(
           this.templatePath(file.templatePath),
@@ -43,10 +43,11 @@ module.exports = class extends Generator {
   }
 
   installing() {
-    // this.spawnCommand('npm', ['install', '-ws=false']);
-    this.log(this.destinationPath('front-end'));
-    this.spawnCommand('npm', ['install'], {
-      cwd: this.destinationPath('front-end'),
-    });
+    this.spawnCommand('npm', ['install', '-ws=false']);
+
+    if (this.answers.backend) {
+      this.spawnCommand('npm', ['run', 'install-fe']);
+      this.spawnCommand('npm', ['run', 'install-be']);
+    }
   }
 };

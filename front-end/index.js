@@ -41,26 +41,24 @@ module.exports = class extends Generator {
     packageJSON.devDependencies = frontEnd.devDependencies;
 
     if (!useBackEnd) {
-      // If we aren't making a back-end copy the public directory
-      this.fs.copyTpl(
-        this.templatePath('../../back-end/templates/public/'),
-        this.destinationPath(destinationPath + 'public'),
-        { appname: this.config.get('appname') },
-      );
       // Copy webpack config template
       copyWebpack(this, destinationPath, {
-        outputPath: 'public/scripts',
-        stylePath: 'public/scripts/',
+        outputPath: 'public',
         backend: useBackEnd,
       });
     } else {
       // Copy webpack config template
       copyWebpack(this, destinationPath, {
-        outputPath: '../back-end/public/scripts',
-        stylePath: '../back-end/public/scripts',
+        outputPath: '../back-end/public',
         backend: !!useBackEnd,
       });
     }
+
+    this.fs.copyTpl(
+      this.templatePath('index.html'),
+      this.destinationPath(destinationPath + 'index.html'),
+      { appname: this.config.get('appname') },
+    );
 
     // If we are using jest add dependencies
     if (this.answers.jest) {

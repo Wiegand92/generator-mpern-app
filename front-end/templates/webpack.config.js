@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack')
 
@@ -8,14 +9,17 @@ const devMode = process.env.NODE_ENV === 'development';
 const plugins = [
   new webpack.ProvidePlugin({
     React: 'react'
-  })
+  }),
+  new HtmlWebpackPlugin({
+    template: 'index.html',
+  }),
 ];
 
 // Enable MiniCss in production only //
 if (!devMode) {
   plugins.push(
     new MiniCssExtractPlugin({
-      filename: 'style.css',
+      filename: 'scripts/style.css',
     }),
   );
 }
@@ -26,7 +30,7 @@ module.exports = {
   entry: './index.js',
 
   output: {
-    filename: 'index.js',
+    filename: 'scripts/index.js',
     path: path.resolve(__dirname, '<%= outputPath %>'),
     clean: true,
   },
@@ -62,7 +66,7 @@ module.exports = {
             : {
                 loader: MiniCssExtractPlugin.loader,
                 options: {
-                  publicPath: path.resolve(__dirname, '<%= stylePath %>'),
+                  publicPath: path.resolve(__dirname, '<%= outputPath %>'),
                 },
               },
           'css-loader',
