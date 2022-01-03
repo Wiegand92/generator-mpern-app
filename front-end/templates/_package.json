@@ -1,5 +1,10 @@
 {
   "name": "front-end",
+  "scripts": {
+    "test": "jest --watch --verbose --coverage",
+    "build": "webpack --mode production",
+    "start": "cross-env NODE_ENV=development webpack serve"
+  },
   "version": "1.0.0",
   "description": "the front-end for my mern stack",
   "author": "Alex Wiegand",

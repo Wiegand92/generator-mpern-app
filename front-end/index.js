@@ -1,25 +1,140 @@
 const Generator = require('yeoman-generator');
 const { editorConfigs } = require('../fixtures/file-locations');
+const { frontEnd } = require('../fixtures/frontEndDependencies');
 
 module.exports = class extends Generator {
-  prompting() {
-    this.log('hello from front-end!');
+  async prompting() {
+    this.log('Lets create your front-end!');
+    this.answers = await this.prompt([
+      {
+        type: 'confirm',
+        name: 'tailwind',
+        message: 'Would you like to use tailwind for styling?',
+        default: true,
+      },
+      {
+        type: 'confirm',
+        name: 'jest',
+        message: 'Would you like to use jest for testing?',
+        default: true,
+      },
+    ]);
   }
 
-  writing() {
+  async writing() {
+    const useBackEnd = this.config.get('backend');
+    // If we are making a back-end as well, everything goes in to the front-end folder, else in the root folder
+    const destinationPath = useBackEnd ? 'front-end/' : '';
+
+    // Copy editor configurations
     editorConfigs.forEach(file =>
       this.fs.copyTpl(
         this.templatePath(file.templatePath),
-        this.destinationPath('front-end/' + file.destinationPath),
+        this.destinationPath(destinationPath + file.destinationPath),
       ),
     );
-    this.fs.copyTpl(
-      this.templatePath('_package.json'),
-      this.destinationPath('front-end/package.json'),
+
+    //Store package.json in a variable to modify
+    const packageJSON = require(this.templatePath('_package.json'));
+
+    packageJSON.dependencies = frontEnd.dependencies;
+    packageJSON.devDependencies = frontEnd.devDependencies;
+
+    if (!useBackEnd) {
+      // If we aren't making a back-end copy the public directory
+      this.fs.copyTpl(
+        this.templatePath('../../back-end/templates/public/'),
+        this.destinationPath(destinationPath + 'public'),
+        { appname: this.config.get('appname') },
+      );
+      // Copy webpack config template
+      copyWebpack(this, destinationPath, {
+        outputPath: 'public/scripts',
+        stylePath: 'public/scripts/',
+        backend: useBackEnd,
+      });
+    } else {
+      // Copy webpack config template
+      copyWebpack(this, destinationPath, {
+        outputPath: '../back-end/public/scripts',
+        stylePath: '../back-end/public/scripts',
+        backend: !!useBackEnd,
+      });
+    }
+
+    // If we are using jest add dependencies
+    if (this.answers.jest) {
+      packageJSON.devDependencies = {
+        ...packageJSON.devDependencies,
+        ...frontEnd.jest,
+      };
+    }
+
+    // If we are using tailwind, add dependencies and config files
+    if (this.answers.tailwind) {
+      packageJSON.devDependencies = {
+        ...packageJSON.devDependencies,
+        ...frontEnd.tailwindCSS,
+      };
+      this.fs.copy(
+        this.templatePath('postcss.config.js'),
+        this.destinationPath(destinationPath + 'postcss.config.js'),
+      );
+      this.fs.copy(
+        this.templatePath('tailwind.config.js'),
+        this.destinationPath(destinationPath + 'tailwind.config.js'),
+      );
+    }
+
+    if (!useBackEnd) {
+      packageJSON.name = this.config.get('appname');
+    }
+
+    // Create package.json
+    this.fs.writeJSON(
+      this.destinationPath(destinationPath + 'package.json'),
+      packageJSON,
     );
+
+    // Copy base files
+    this.fs.copyTpl(
+      this.templatePath('components'),
+      this.destinationPath(destinationPath + 'components'),
+      { appname: this.config.get('appname') },
+    );
+
+    // Copy index.js
+    this.fs.copyTpl(
+      this.templatePath('index.js'),
+      this.destinationPath(destinationPath + 'index.js'),
+      { tailwind: this.answers.tailwind },
+    );
+
+    // Copy .babelrc
+    this.fs.copy(
+      this.templatePath('.babelrc'),
+      this.destinationPath(destinationPath + '.babelrc'),
+    );
+
+    // Copy styles folder and files
+    this.fs.copy(
+      this.templatePath('styles'),
+      this.destinationPath(destinationPath + 'styles'),
+    );
+
+    // Copy .gitignore
     this.fs.copyTpl(
       this.templatePath('.gitignore'),
-      this.destinationPath('front-end/.gitignore'),
+      this.destinationPath(destinationPath + '.gitignore'),
     );
   }
 };
+
+function copyWebpack(generator, destinationPath, templateValues) {
+  // Copy webpack config template
+  generator.fs.copyTpl(
+    generator.templatePath('webpack.config.js'),
+    generator.destinationPath(destinationPath + 'webpack.config.js'),
+    templateValues,
+  );
+}
