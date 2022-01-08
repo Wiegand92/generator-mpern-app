@@ -1,6 +1,7 @@
 const Generator = require('yeoman-generator');
 const { editorConfigs } = require('../fixtures/file-locations');
 const { frontEnd } = require('../fixtures/frontEndDependencies');
+const { mkPublic } = require('../utils/makePublic');
 
 module.exports = class extends Generator {
   async prompting() {
@@ -21,7 +22,7 @@ module.exports = class extends Generator {
     ]);
   }
 
-  async writing() {
+  writing() {
     const useBackEnd = this.config.get('backend');
     // If we are making a back-end as well, everything goes in to the front-end folder, else in the root folder
     const destinationPath = useBackEnd ? 'front-end/' : '';
@@ -46,6 +47,8 @@ module.exports = class extends Generator {
         outputPath: 'public',
         backend: useBackEnd,
       });
+
+      mkPublic(destinationPath);
     } else {
       // Copy webpack config template
       copyWebpack(this, destinationPath, {
@@ -56,7 +59,7 @@ module.exports = class extends Generator {
 
     this.fs.copyTpl(
       this.templatePath('index.html'),
-      this.destinationPath(destinationPath + 'index.html'),
+      this.destinationPath(destinationPath + 'src/index.html'),
       { appname: this.config.get('appname') },
     );
 
@@ -97,7 +100,7 @@ module.exports = class extends Generator {
     // Copy base files
     this.fs.copyTpl(
       this.templatePath('components'),
-      this.destinationPath(destinationPath + 'components'),
+      this.destinationPath(destinationPath + 'src/components'),
       { appname: this.config.get('appname') },
     );
 
@@ -117,7 +120,7 @@ module.exports = class extends Generator {
     // Copy styles folder and files
     this.fs.copy(
       this.templatePath('styles'),
-      this.destinationPath(destinationPath + 'styles'),
+      this.destinationPath(destinationPath + 'src/styles'),
     );
 
     // Copy .gitignore
